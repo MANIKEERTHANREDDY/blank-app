@@ -1,0 +1,109 @@
+hypertension
+coronary artery disease
+myocardial infarction
+heart failure
+arrhythmia
+atrial fibrillation
+cardiomyopathy
+peripheral artery disease
+deep vein thrombosis
+pulmonary embolism
+aortic aneurysm
+endocarditis
+rheumatic heart disease
+asthma
+chronic obstructive pulmonary disease
+pneumonia
+tuberculosis
+lung cancer
+pulmonary fibrosis
+bronchiectasis
+sarcoidosis
+pulmonary hypertension
+sleep apnea
+emphysema
+pleural effusion
+parkinson's disease
+alzheimer's disease
+multiple sclerosis
+epilepsy
+migraine
+stroke
+amyotrophic lateral sclerosis
+huntington's disease
+myasthenia gravis
+guillain-barre syndrome
+neuropathy
+meningitis
+encephalitis
+type 1 diabetes mellitus
+type 2 diabetes mellitus
+hyperthyroidism
+hypothyroidism
+cushing's syndrome
+addison's disease
+pituitary adenoma
+hyperparathyroidism
+hypoparathyroidism
+osteoporosis
+polycystic ovary syndrome
+metabolic syndrome
+gout
+hepatitis B
+hepatitis C
+hiv/aids
+sepsis
+malaria
+dengue fever
+influenza
+covid-19
+ebola virus disease
+zika virus
+cholera
+leprosy
+syphilis
+mononucleosis
+lyme disease
+gastritis
+gastroesophageal reflux disease
+peptic ulcer disease
+hepatitis
+cirrhosis
+fatty liver disease
+pancreatitis
+irritable bowel syndrome
+crohn's disease
+ulcerative colitis
+celiac disease
+diverticulitis
+appendicitis
+rheumatoid arthritis
+systemic lupus erythematosus
+sjogren's syndrome
+multiple sclerosis
+celiac disease
+hashimoto's thyroiditis
+autoimmune hepatitis
+ankylosing spondylitis
+psoriasis
+scleroderma
+myasthenia gravis
+graves' disease
+osteoarthritis
+rheumatoid arthritis
+osteoporosis
+gout
+fibromyalgia
+ankylosing spondylitis
+tendinitis
+carpal tunnel syndrome
+scoliosis
+anemia
+sickle cell disease
+thalassemia
+hemophilia
+leukemia
+lymphoma
+multiple myeloma
+polycythemia vera
+disseminated intravascular coagulation
