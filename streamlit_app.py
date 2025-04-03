@@ -6,14 +6,14 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
-if "GOOGLE_API_KEY" in st.secrets:
-    api_key = st.secrets["GOOGLE_API_KEY"]
-    genai.configure(api_key=api_key)
-else:
-    st.error("API Key not found! Make sure it's in .streamlit/secrets.toml")                                                      
-    st.stop()
+load_dotenv()
 
+# Configure Google Gemini API
+api_key = os.getenv('GOOGLE_API_KEY')
+if api_key is None:
+    raise ValueError("No API key found in environment variables")
+
+genai.configure(api_key=api_key)
 # Load the BioBERT NER model
 @st.cache_resource
 def load_ner_pipeline():
