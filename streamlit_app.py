@@ -68,15 +68,15 @@ EXCLUDED_TERMS = {"ecg", "troponin", "examination", "sars - cov - 2"}
 DISEASE_OVERRIDES = {"hypertension", "type 2 diabetes mellitus"}
 
 # Streamlit UI
-st.title("🔬 Biomedical NER App")
-st.markdown("**Powered by BioBERT & Google Gemini**")
+st.title("Biomedical NER App")
+st.markdown("**Powered by BioBERT**")
 
 # Sidebar for About & How to Use
 with st.sidebar:
-    st.header("📌 About")
-    st.markdown("This app is developed using BioBERT for biomedical named entity recognition (NER) and Google Gemini for drug recommendations. It helps medical researchers extract key biomedical terms from text and provides relevant drug recommendations.")
+    st.header("About")
+    st.markdown("This app is developed using BioBERT for biomedical named entity recognition (NER). It helps medical researchers extract key biomedical terms from text and provides relevant drug recommendations.")
     
-    st.header("🛠️ How to Use")
+    st.header("How to Use")
     st.markdown("""
     - Enter text manually or upload a document (TXT, PDF, DOCX).
     - Click the respective **Analyze** button.
@@ -84,11 +84,11 @@ with st.sidebar:
     - If diseases are detected, relevant drug recommendations will be provided.
     """)
     
-    st.header("📧 Queries?")
-    st.markdown("For any issues or suggestions, contact: [Your Email] or visit [GitHub Repo]")
+    st.header("Queries?")
+    st.markdown("For any issues or suggestions, contact: severussnape01082003@gmail.com")
 
 # Tabs for text input and file upload
-tab1, tab2 = st.tabs(["✍️ Text Input", "📂 File Upload"])
+tab1, tab2 = st.tabs(["Text Input", "File Upload"])
 
 with tab1:
     text = st.text_area("Enter text for NER analysis:")
