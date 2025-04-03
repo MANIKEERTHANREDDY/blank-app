@@ -14,6 +14,7 @@ if api_key is None:
     raise ValueError("No API key found in environment variables")
 
 genai.configure(api_key=api_key)
+
 # Load the BioBERT NER model
 @st.cache_resource
 def load_ner_pipeline():
@@ -28,11 +29,11 @@ def detokenize_wordpieces(tokens):
 
     for token in tokens:
         if token.startswith("##"):
-            current_word += token[2:]  # Merge with previous word
+            current_word += token[2:]
         else:
             if current_word:
                 merged_tokens.append(current_word)
-            current_word = token  # Start a new word
+            current_word = token
 
     if current_word:
         merged_tokens.append(current_word)
@@ -41,10 +42,7 @@ def detokenize_wordpieces(tokens):
 
 # Function to get drug recommendations from Google Gemini
 def get_drug_recommendation(disease):
-    cleaned_disease = disease.replace("-", " ")  
-    cleaned_disease = " ".join(cleaned_disease.split())  
-    cleaned_disease = cleaned_disease.capitalize()  
-
+    cleaned_disease = disease.replace("-", " ").capitalize()
     model = genai.GenerativeModel("gemini-2.0-flash")
     response = model.generate_content(
         f"List only the drug names used to treat {cleaned_disease}, separated by commas. No explanations, just drug names."
@@ -65,59 +63,82 @@ def extract_text_from_file(uploaded_file):
 
 # List of non-disease terms to exclude
 EXCLUDED_TERMS = {"ecg", "troponin", "examination", "sars - cov - 2"}
-
-# List of diseases that might be mislabeled as "History" but should be treated as diseases
 DISEASE_OVERRIDES = {"hypertension", "type 2 diabetes mellitus"}
 
 # Streamlit UI
-st.title("Biomedical NER")
+st.title("🔬 Biomedical NER (Powered by BioBERT)")
+st.markdown(
+    "This app is developed using **BioBERT** for **medical research**."
+)
 
-# Text input
-text = st.text_area("Enter text for NER:")
+# UI Layout
+tab1, tab2 = st.tabs(["📄 Analyze Text", "📂 Upload File"])
 
-# File uploader
-uploaded_file = st.file_uploader("Upload a text, PDF, or Word file", type=["txt", "pdf", "docx"])
+with tab1:
+    text = st.text_area("Enter text for NER analysis:")
+    if st.button("🔍 Analyze Text", type="primary"):
+        if text.strip():
+            results = ner_pipeline(text)
+            recognized_diseases = set()
+            entities = []
 
-if st.button("Analyze"):
-    if uploaded_file is not None:
-        text = extract_text_from_file(uploaded_file)
-    
-    if text.strip():
-        # Run NER only once
-        results = ner_pipeline(text)
-        
-        recognized_diseases = set()
-        entities = []
+            for entity in results:
+                word = detokenize_wordpieces([entity["word"].replace("##", "")])[0]
+                entity_type = entity.get("entity", entity.get("entity_group", "Unknown"))
+                if word.lower() in DISEASE_OVERRIDES:
+                    entity_type = "Disease_disorder"
+                if any(keyword in entity_type.lower() for keyword in ["disease", "disorder"]) and word.lower() not in EXCLUDED_TERMS:
+                    recognized_diseases.add(word.lower())
+                entities.append({"Word": word, "Entity": entity_type})
 
-        for entity in results:
-            word = entity["word"].replace("##", "")  # Fix subword tokenization
-            word = detokenize_wordpieces([word])[0]  # Apply detokenization
-            entity_type = entity.get("entity", entity.get("entity_group", "Unknown"))
+            if entities:
+                st.subheader("🔬 Named Entities Detected:")
+                st.table(entities)
+            else:
+                st.info("No biomedical entities detected.")
 
-            # If the entity is "History" but should be a disease, fix classification
-            if word.lower() in DISEASE_OVERRIDES:
-                entity_type = "Disease_disorder"
-
-            # Only include actual diseases/disorders and exclude non-disease terms
-            if any(keyword in entity_type.lower() for keyword in ["disease", "disorder"]) and word.lower() not in EXCLUDED_TERMS:
-                recognized_diseases.add(word.lower())  
-
-            entities.append({"Word": word, "Entity": entity_type})
-
-        # Display recognized entities
-        if entities:
-            st.subheader("Named Entities Detected:")
-            st.table(entities)
+            if recognized_diseases:
+                st.subheader("💊 Recommended Drugs:")
+                for disease in recognized_diseases:
+                    drugs = get_drug_recommendation(disease)
+                    st.markdown(f"**{disease.title()}**: {drugs}")
+            else:
+                st.info("No diseases detected.")
         else:
-            st.info("No biomedical entities detected.")
+            st.warning("Please enter text for analysis.")
 
-        # Drug recommendations for valid diseases only
-        if recognized_diseases:
-            st.subheader("Recommended Drugs:")
-            for disease in recognized_diseases:
-                drugs = get_drug_recommendation(disease)
-                st.markdown(f"**{disease.title()}**: {drugs}")
+with tab2:
+    uploaded_file = st.file_uploader("Upload a text, PDF, or Word file", type=["txt", "pdf", "docx"])
+    if st.button("📂 Analyze File", type="primary"):
+        if uploaded_file is not None:
+            text = extract_text_from_file(uploaded_file)
+            if text.strip():
+                results = ner_pipeline(text)
+                recognized_diseases = set()
+                entities = []
+                for entity in results:
+                    word = detokenize_wordpieces([entity["word"].replace("##", "")])[0]
+                    entity_type = entity.get("entity", entity.get("entity_group", "Unknown"))
+                    if word.lower() in DISEASE_OVERRIDES:
+                        entity_type = "Disease_disorder"
+                    if any(keyword in entity_type.lower() for keyword in ["disease", "disorder"]) and word.lower() not in EXCLUDED_TERMS:
+                        recognized_diseases.add(word.lower())
+                    entities.append({"Word": word, "Entity": entity_type})
+
+                if entities:
+                    st.subheader("🔬 Named Entities Detected:")
+                    st.table(entities)
+                else:
+                    st.info("No biomedical entities detected.")
+
+                if recognized_diseases:
+                    st.subheader("💊 Recommended Drugs:")
+                    for disease in recognized_diseases:
+                        drugs = get_drug_recommendation(disease)
+                        st.markdown(f"**{disease.title()}**: {drugs}")
+                else:
+                    st.info("No diseases detected.")
+            else:
+                st.warning("No text extracted from the file.")
         else:
-            st.info("No diseases detected.")
-    else:
-        st.warning("Please enter text or upload a file for analysis.")
+            st.warning("Please upload a file for analysis.")
