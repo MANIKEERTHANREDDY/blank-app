@@ -22,11 +22,21 @@ def load_ner_pipeline():
 
 ner_pipeline = load_ner_pipeline()
 
+# Function to load disease names from a file
+def load_disease_list(file_path="diseases.txt"):
+    try:
+        with open(file_path, "r") as f:
+            return set(line.strip().lower() for line in f if line.strip())
+    except FileNotFoundError:
+        return set()
+
+DISEASE_OVERRIDES = load_disease_list()
+
 # Function to merge WordPiece tokens into full words
 def detokenize_wordpieces(tokens):
     merged_tokens = []
     current_word = ""
-
+    
     for token in tokens:
         if token.startswith("##"):
             current_word += token[2:]
@@ -34,10 +44,10 @@ def detokenize_wordpieces(tokens):
             if current_word:
                 merged_tokens.append(current_word)
             current_word = token
-
+    
     if current_word:
         merged_tokens.append(current_word)
-
+    
     return merged_tokens
 
 # Function to get drug recommendations from Google Gemini
@@ -63,9 +73,6 @@ def extract_text_from_file(uploaded_file):
 
 # List of non-disease terms to exclude
 EXCLUDED_TERMS = {"ecg", "troponin", "examination", "sars - cov - 2"}
-
-# List of diseases that might be mislabeled as "History" but should be treated as diseases
-DISEASE_OVERRIDES = {"hypertension", "type 2 diabetes mellitus"}
 
 # Streamlit UI
 st.title("Biomedical NER App")
